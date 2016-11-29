@@ -1,3 +1,6 @@
 rootProject.name = 'GeofenceMonitorSampleApp'
 
 include ':app'
+
+include ':react-native-geofence-monitor'
+project(':react-native-geofence-monitor').projectDir = new File(settingsDir, '../../android/GeofenceMonitor/app')

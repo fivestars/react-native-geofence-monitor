@@ -12,8 +12,15 @@ import {
   View
 } from 'react-native';
 
+const GeofenceMonitor = require('react-native').NativeModules.GeofenceMonitor;
+
 export default class GeofenceMonitorSampleApp extends Component {
   render() {
+    console.log('[][] rawr');
+    console.log(GeofenceMonitor);
+    GeofenceMonitor.addRegion(122.00, -124.00, 100, function (a,b) {
+      console.log('[][] callback hit', a, b);
+    });
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
