@@ -20,17 +20,32 @@ DeviceEventEmitter.addListener(
   function(notifData) {
     console.log('[][] notif data');
     console.log(notifData);
+    var data = JSON.parse(notifData.dataJSON);
+
+    PushNotification.localNotification({
+        message: data['notificationDetails'], // (required)
+    });
   }
 );
 
+var PushNotification = require('react-native-push-notification');
+
+PushNotification.configure({
+    // (required) Called when a remote or local notification is opened or received
+    onNotification: function(notification) {
+        console.log( 'NOTIFICATION:', notification );
+    },
+});
+
+console.log('[][] rawr');
+console.log(GeofenceMonitor);
+GeofenceMonitor.init(function () {console.log('[][] why??');});
+// GeofenceMonitor.addRegion(122.00, -124.00, 100, function (a,b) {
+//   console.log('[][] callback hit', a, b);
+// });
+
 export default class GeofenceMonitorSampleApp extends Component {
   render() {
-    console.log('[][] rawr');
-    console.log(GeofenceMonitor);
-    GeofenceMonitor.init(function () {console.log('[][] why??');});
-    // GeofenceMonitor.addRegion(122.00, -124.00, 100, function (a,b) {
-    //   console.log('[][] callback hit', a, b);
-    // });
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>

@@ -1,6 +1,8 @@
 rootProject.name = 'GeofenceMonitorSampleApp'
 
 include ':app'
+include ':react-native-push-notification'
+project(':react-native-push-notification').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-push-notification/android')
 
 include ':react-native-geofence-monitor'
 project(':react-native-geofence-monitor').projectDir = new File(settingsDir, '../../android/GeofenceMonitor/app')
