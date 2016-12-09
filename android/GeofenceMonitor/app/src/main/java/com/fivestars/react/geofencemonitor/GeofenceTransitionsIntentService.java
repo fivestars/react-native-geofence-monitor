@@ -137,16 +137,20 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 // If it's constructed, send a notification
                 if (context != null) {
                     handleGeofenceEvent((ReactApplicationContext) context, notificationDetails);
+                    Log.e(TAG, "[][] sendNotification: context is not null");
                 } else {
                     // Otherwise wait for construction, then send the notification
                     mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                         public void onReactContextInitialized(ReactContext context) {
                             handleGeofenceEvent((ReactApplicationContext) context, notificationDetails);
+                            Log.e(TAG, "[][] sendNotification: inside onReactContextInitialized");
                         }
                     });
+                    Log.e(TAG, "[][] sendNotification: context IS null");
                     if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
                         // Construct it in the background
                         mReactInstanceManager.createReactContextInBackground();
+                        Log.e(TAG, "[][] sendNotification: calling createReactContextInBackground");
                     }
                 }
             }

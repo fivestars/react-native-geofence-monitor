@@ -19,12 +19,13 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
 
     private GeofenceHandler handler;
     private GeofenceMonitorJsDelivery mJsDelivery;
+    private Application applicationContext;
 
     public GeofenceMonitor(ReactApplicationContext reactContext) {
         super(reactContext);
         reactContext.addActivityEventListener(this);
 
-        Application applicationContext = (Application) reactContext.getApplicationContext();
+        applicationContext = (Application) reactContext.getApplicationContext();
 
         // This is used to delivery callbacks to JS
         mJsDelivery = new GeofenceMonitorJsDelivery(reactContext);
@@ -38,8 +39,8 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     @ReactMethod
     public void init(Callback errorCallback) {
         handler = new GeofenceHandler();
-        Log.e("plucas", "MY ACTIVITY: " + getCurrentActivity().toString());
-        handler.init(getCurrentActivity());
+        //Log.e("plucas", "MY ACTIVITY: " + getCurrentActivity().toString());
+        handler.init(this.applicationContext);
     }
 
     @ReactMethod
