@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.content.Context;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -72,8 +73,11 @@ public class GeofenceHandler implements
 
     private Context context;
 
-    public void init(Context context) {
+    private ArrayList<GeofenceLocation> mLocations;
+
+    public void init(Context context, ArrayList<GeofenceLocation> locations) {
         this.context = context;
+        this.mLocations = locations;
 
         // Empty list for storing geofences.
         mGeofenceList = new ArrayList<Geofence>();
@@ -251,28 +255,26 @@ public class GeofenceHandler implements
      * the user's location.
      */
     public void populateGeofenceList() {
-        mGeofenceList.add(new Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
-                .setRequestId("GEOFENCE_KEY")
+        for (GeofenceLocation location : this.mLocations) {
+            mGeofenceList.add(new Geofence.Builder()
+                    // Set the request ID of the geofence. This is a string to identify this
+                    // geofence.
+                    .setRequestId(location.id)
 
-                // Set the circular region of this geofence.
-                .setCircularRegion(
-                        37.784251,
-                        -122.392715,
-                        100
-                )
+                    // Set the circular region of this geofence.
+                    .setCircularRegion(location.lat, location.lon, location.radius)
 
-                // Set the expiration duration of the geofence. This geofence gets automatically
-                // removed after this period of time.
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                    // Set the expiration duration of the geofence. This geofence gets automatically
+                    // removed after this period of time.
+                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
 
-                // Set the transition types of interest. Alerts are only generated for these
-                // transition. We track entry and exit transitions in this sample.
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                    // Set the transition types of interest. Alerts are only generated for these
+                    // transition. We track entry and exit transitions in this sample.
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                            Geofence.GEOFENCE_TRANSITION_EXIT)
 
-                // Create the geofence.
-                .build());
+                    // Create the geofence.
+                    .build());
+        }
     }
 }

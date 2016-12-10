@@ -1,5 +1,7 @@
 package com.fivestars.react.geofencemonitor;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 
 
 import android.util.Log;
@@ -21,6 +24,8 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     private GeofenceMonitorJsDelivery mJsDelivery;
     private Application applicationContext;
 
+    private ArrayList<GeofenceLocation> locations;
+
     public GeofenceMonitor(ReactApplicationContext reactContext) {
         super(reactContext);
         reactContext.addActivityEventListener(this);
@@ -29,6 +34,8 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
 
         // This is used to delivery callbacks to JS
         mJsDelivery = new GeofenceMonitorJsDelivery(reactContext);
+
+        locations = new ArrayList<>();
     }
 
     @Override
@@ -37,16 +44,23 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     }
 
     @ReactMethod
-    public void init(Callback errorCallback) {
+    public void init() {
         handler = new GeofenceHandler();
         //Log.e("plucas", "MY ACTIVITY: " + getCurrentActivity().toString());
-        handler.init(this.applicationContext);
+        handler.init(this.applicationContext, this.locations);
     }
 
     @ReactMethod
-    public void addRegion(double lat, double lon, double radius, Callback errorCallback) {
-        Log.e("plucas", "[][][] addRegion" + lat + " " + lon + " " + radius);
-        errorCallback.invoke("abc", 123);
+    public void addRegion(ReadableArray jsLocation) {
+        String geofenceId = jsLocation.getString(0);
+        double lat = jsLocation.getDouble(1);
+        double lon = jsLocation.getDouble(2);
+        float radius = (float) jsLocation.getDouble(3);
+
+        GeofenceLocation location = new GeofenceLocation(geofenceId, lat, lon, radius);
+
+        Log.e("plucas", "[][][] addRegion: " + geofenceId + "; " + lat + "; " + lon + "; " + radius);
+        this.locations.add(location);
     }
 
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
