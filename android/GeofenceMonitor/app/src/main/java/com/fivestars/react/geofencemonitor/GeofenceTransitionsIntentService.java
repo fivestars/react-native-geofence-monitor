@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -80,15 +81,14 @@ public class GeofenceTransitionsIntentService extends IntentService {
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
             // Get the transition details as a String.
-            String geofenceTransitionDetails = getGeofenceTransitionDetails(
+            HashMap<String, ArrayList> details = getGeofenceTransitionDetails(
                     this,
                     geofenceTransition,
                     triggeringGeofences
             );
 
             // Send notification and log the transition details.
-            sendNotification(geofenceTransitionDetails);
-            Log.i(TAG, geofenceTransitionDetails);
+            sendNotification(details);
         } else {
             // Log the error.
             Log.e(TAG, "invalid transition type");
@@ -103,28 +103,31 @@ public class GeofenceTransitionsIntentService extends IntentService {
      * @param triggeringGeofences   The geofence(s) triggered.
      * @return                      The transition details formatted as String.
      */
-    private String getGeofenceTransitionDetails(
+    private HashMap<String, ArrayList> getGeofenceTransitionDetails(
             Context context,
             int geofenceTransition,
             List<Geofence> triggeringGeofences) {
 
         String geofenceTransitionString = getTransitionString(geofenceTransition);
 
+        HashMap<String, ArrayList> map = new HashMap<>();
+
         // Get the Ids of each geofence that was triggered.
         ArrayList triggeringGeofencesIdsList = new ArrayList();
         for (Geofence geofence : triggeringGeofences) {
             triggeringGeofencesIdsList.add(geofence.getRequestId());
         }
-        String triggeringGeofencesIdsString = TextUtils.join(", ",  triggeringGeofencesIdsList);
 
-        return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
+        map.put(geofenceTransitionString, triggeringGeofencesIdsList);
+
+        return map;
     }
 
     /**
      * Posts a notification in the notification bar when a transition is detected.
      * If the user clicks the notification, control goes to the MainActivity.
      */
-    private void sendNotification(final String notificationDetails) {
+    private void sendNotification(final HashMap<String, ArrayList> map) {
         // We need to run this on the main thread, as the React code assumes that is true.
         // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
         // "Can't create handler inside thread that has not called Looper.prepare()"
@@ -136,13 +139,13 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 ReactContext context = mReactInstanceManager.getCurrentReactContext();
                 // If it's constructed, send a notification
                 if (context != null) {
-                    handleGeofenceEvent((ReactApplicationContext) context, notificationDetails);
+                    handleGeofenceEvent((ReactApplicationContext) context, map);
                     Log.e(TAG, "[][] sendNotification: context is not null");
                 } else {
                     // Otherwise wait for construction, then send the notification
                     mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                         public void onReactContextInitialized(ReactContext context) {
-                            handleGeofenceEvent((ReactApplicationContext) context, notificationDetails);
+                            handleGeofenceEvent((ReactApplicationContext) context, map);
                             Log.e(TAG, "[][] sendNotification: inside onReactContextInitialized");
                         }
                     });
@@ -157,16 +160,21 @@ public class GeofenceTransitionsIntentService extends IntentService {
         });
     }
 
-    private void handleGeofenceEvent(ReactApplicationContext context, String notificationDetails) {
-        Boolean isForeground = false;//isApplicationInForeground();
-
+    private void handleGeofenceEvent(ReactApplicationContext context, HashMap<String, ArrayList> map) {
         Bundle b = new Bundle();
-        b.putString("notificationDetails", notificationDetails);
+        /*
+        for (HashMap.Entry<String, ArrayList> entry : map.entrySet()) {
+            b.putStringArrayList(entry.getKey(), entry.getValue());
+        }
+        */
+
+        // can only have one entry... should probably pass in a better data structure?
+        HashMap.Entry<String, ArrayList> entry = map.entrySet().iterator().next();
+        b.putString("type", entry.getKey());
+        b.putStringArrayList("ids", entry.getValue());
 
         GeofenceMonitorJsDelivery jsDelivery = new GeofenceMonitorJsDelivery(context);
-        jsDelivery.notifyNotification(b);
-
-        Log.v(TAG, "sendNotification: " + notificationDetails);
+        jsDelivery.sendGeofenceTransition(b);
     }
 
     /**

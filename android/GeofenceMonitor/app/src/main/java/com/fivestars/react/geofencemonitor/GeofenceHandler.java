@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +12,12 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.content.Context;
 
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -20,6 +26,8 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.GeofencingApi;
 //import com.google.android.gms.maps.model.LatLng;
@@ -42,7 +50,7 @@ import java.util.Map;
  * becomes available.
  */
 public class GeofenceHandler implements
-        ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status> {
+        ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status>, LocationListener {
 
     protected static final String TAG = "GeofenceHandler";
 
@@ -72,10 +80,14 @@ public class GeofenceHandler implements
     private SharedPreferences mSharedPreferences;
 
     private Context context;
+    private ReactApplicationContext reactApplicationContext;
 
     private ArrayList<GeofenceLocation> mLocations;
 
-    public void init(Context context, ArrayList<GeofenceLocation> locations) {
+    private LocationRequest mLocationRequest;
+
+    public void init(ReactApplicationContext reactApplicationContext, Context context, ArrayList<GeofenceLocation> locations) {
+        this.reactApplicationContext = reactApplicationContext;
         this.context = context;
         this.mLocations = locations;
 
@@ -106,6 +118,7 @@ public class GeofenceHandler implements
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
+        Log.e(TAG, "[][] || creating google api client");
     }
 
 
@@ -277,4 +290,52 @@ public class GeofenceHandler implements
                     .build());
         }
     }
+
+    protected void createLocationRequest() {
+        if (mLocationRequest != null) {
+            return;
+        }
+        Log.e(TAG, "[][] || creating location request");
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    protected void startLocationUpdates() {
+       try {
+           Log.e(TAG, "[][] || starting location updates");
+           createLocationRequest();
+           LocationServices.FusedLocationApi.requestLocationUpdates(
+                   mGoogleApiClient, mLocationRequest, this);
+       } catch (SecurityException e) {
+           // TODO
+       }
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.e("plucas", "onLocationChange: " + location.toString());
+        if (this.reactApplicationContext == null) {
+            Log.e("plucas", "reactApplicationContext does not exist, unsubscribing from updates");
+            stopLocationUpdates();
+            return;
+        }
+
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+
+        Bundle b = new Bundle();
+        b.putDouble("lat", lat);
+        b.putDouble("lon", lon);
+        GeofenceMonitorJsDelivery jsDelivery = new GeofenceMonitorJsDelivery(this.reactApplicationContext);
+        jsDelivery.sendLocationUpdate(b);
+    }
+
 }

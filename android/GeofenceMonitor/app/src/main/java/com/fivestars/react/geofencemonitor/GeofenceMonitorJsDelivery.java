@@ -20,37 +20,31 @@ public class GeofenceMonitorJsDelivery {
         mReactContext = reactContext;
     }
 
-    void sendEvent(String eventName, Object params) {
+    void sendEvent(String eventName, Bundle bundle) {
         if (mReactContext.hasActiveCatalystInstance()) {
+            String bundleString = convertJSON(bundle);
+            WritableMap params = Arguments.createMap();
+            params.putString("dataJSON", bundleString);
+
             mReactContext
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                     .emit(eventName, params);
         }
     }
 
-    void notifyRemoteFetch(Bundle bundle) {
+    void sendGeofenceTransition(Bundle bundle) {
         String bundleString = convertJSON(bundle);
-        WritableMap params = Arguments.createMap();
-        params.putString("dataJSON", bundleString);
-        sendEvent("remoteFetch", params);
+
+        sendEvent("geofenceTransition", bundle);
     }
 
-    void notifyNotification(Bundle bundle) {
+    void sendLocationUpdate(Bundle bundle) {
         String bundleString = convertJSON(bundle);
 
         WritableMap params = Arguments.createMap();
         params.putString("dataJSON", bundleString);
 
-        sendEvent("remoteNotificationReceived", params);
-    }
-
-    void notifyNotificationAction(Bundle bundle) {
-        String bundleString = convertJSON(bundle);
-
-        WritableMap params = Arguments.createMap();
-        params.putString("dataJSON", bundleString);
-
-        sendEvent("notificationActionReceived", params);
+        sendEvent("locationUpdate", bundle);
     }
 
     String convertJSON(Bundle bundle) {

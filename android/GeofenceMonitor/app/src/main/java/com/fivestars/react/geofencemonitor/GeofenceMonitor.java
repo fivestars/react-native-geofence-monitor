@@ -23,6 +23,7 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     private GeofenceHandler handler;
     private GeofenceMonitorJsDelivery mJsDelivery;
     private Application applicationContext;
+    private ReactApplicationContext reactApplicationContext;
 
     private ArrayList<GeofenceLocation> locations;
 
@@ -31,6 +32,7 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
         reactContext.addActivityEventListener(this);
 
         applicationContext = (Application) reactContext.getApplicationContext();
+        reactApplicationContext = getReactApplicationContext();
 
         // This is used to delivery callbacks to JS
         mJsDelivery = new GeofenceMonitorJsDelivery(reactContext);
@@ -47,7 +49,7 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     public void init() {
         handler = new GeofenceHandler();
         //Log.e("plucas", "MY ACTIVITY: " + getCurrentActivity().toString());
-        handler.init(this.applicationContext, this.locations);
+        handler.init(this.reactApplicationContext, this.applicationContext, this.locations);
     }
 
     @ReactMethod
@@ -61,6 +63,16 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
 
         Log.e("plucas", "[][][] addRegion: " + geofenceId + "; " + lat + "; " + lon + "; " + radius);
         this.locations.add(location);
+    }
+
+    @ReactMethod
+    public void startLocationUpdates() {
+        handler.startLocationUpdates();
+    }
+
+    @ReactMethod
+    public void stopLocationUpdates() {
+        handler.stopLocationUpdates();
     }
 
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
