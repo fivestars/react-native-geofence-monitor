@@ -33,18 +33,11 @@ public class GeofenceMonitorJsDelivery {
     }
 
     void sendGeofenceTransition(Bundle bundle) {
-        String bundleString = convertJSON(bundle);
-
         sendEvent("geofenceTransition", bundle);
     }
 
-    void sendLocationUpdate(Bundle bundle) {
-        String bundleString = convertJSON(bundle);
-
-        WritableMap params = Arguments.createMap();
-        params.putString("dataJSON", bundleString);
-
-        sendEvent("locationUpdate", bundle);
+    void sendGeofenceRanging(Bundle bundle) {
+        sendEvent("geofenceRanging", bundle);
     }
 
     String convertJSON(Bundle bundle) {

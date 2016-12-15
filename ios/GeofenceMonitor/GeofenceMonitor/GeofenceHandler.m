@@ -24,9 +24,9 @@
 
         CLRegion *clRegion = [[CLCircularRegion alloc] initWithCenter:[coordinate coordinate] radius:[radius doubleValue] identifier:regionId];
 
-        //[_locationManager requestStateForRegion:region];
-        [_locationManager stopMonitoringForRegion:clRegion];
+        [_locationManager requestStateForRegion:region];
         [_locationManager startMonitoringForRegion:clRegion];
+        [_locationManager requestStateForRegion:region];
     }
 
     NSLog(@"[][] plucas startMonitoring");

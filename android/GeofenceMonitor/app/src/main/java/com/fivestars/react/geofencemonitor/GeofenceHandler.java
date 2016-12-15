@@ -156,8 +156,7 @@ public class GeofenceHandler implements
         // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
         // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
         // is already inside that geofence.
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_EXIT);
         // Add the geofences to be monitored by geofencing service.
         builder.addGeofences(mGeofenceList);
 
@@ -331,11 +330,22 @@ public class GeofenceHandler implements
         double lat = location.getLatitude();
         double lon = location.getLongitude();
 
-        Bundle b = new Bundle();
-        b.putDouble("lat", lat);
-        b.putDouble("lon", lon);
-        GeofenceMonitorJsDelivery jsDelivery = new GeofenceMonitorJsDelivery(this.reactApplicationContext);
-        jsDelivery.sendLocationUpdate(b);
+        for (GeofenceLocation geofenceLocation : mLocations) {
+            float[] results = new float[1];
+            Location.distanceBetween(geofenceLocation.lat, geofenceLocation.lon, lat, lon, results);
+            float distanceInMeters = results[0];
+
+            String type = "GEOFENCE_OUTSIDE";
+            if (distanceInMeters <= geofenceLocation.radius) {
+                type = "GEOFENCE_INSIDE";
+            }
+
+            Bundle b = new Bundle();
+            b.putString("type", type);
+            b.putString("regionId", geofenceLocation.id);
+            GeofenceMonitorJsDelivery jsDelivery = new GeofenceMonitorJsDelivery(this.reactApplicationContext);
+            jsDelivery.sendGeofenceRanging(b);
+        }
     }
 
 }

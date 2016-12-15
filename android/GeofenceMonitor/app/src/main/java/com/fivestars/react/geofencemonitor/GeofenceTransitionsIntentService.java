@@ -161,20 +161,20 @@ public class GeofenceTransitionsIntentService extends IntentService {
     }
 
     private void handleGeofenceEvent(ReactApplicationContext context, HashMap<String, ArrayList> map) {
-        Bundle b = new Bundle();
-        /*
-        for (HashMap.Entry<String, ArrayList> entry : map.entrySet()) {
-            b.putStringArrayList(entry.getKey(), entry.getValue());
-        }
-        */
 
         // can only have one entry... should probably pass in a better data structure?
         HashMap.Entry<String, ArrayList> entry = map.entrySet().iterator().next();
-        b.putString("type", entry.getKey());
-        b.putStringArrayList("ids", entry.getValue());
 
-        GeofenceMonitorJsDelivery jsDelivery = new GeofenceMonitorJsDelivery(context);
-        jsDelivery.sendGeofenceTransition(b);
+        ArrayList<String> regionIds = entry.getValue();
+
+        for (String regionId : regionIds) {
+            Bundle b = new Bundle();
+            b.putString("type", entry.getKey());
+            b.putString("regionId", regionId);
+
+            GeofenceMonitorJsDelivery jsDelivery = new GeofenceMonitorJsDelivery(context);
+            jsDelivery.sendGeofenceTransition(b);
+        }
     }
 
     /**

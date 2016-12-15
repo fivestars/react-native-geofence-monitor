@@ -46,32 +46,27 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     }
 
     @ReactMethod
-    public void init() {
+    public void startMonitoring() {
         handler = new GeofenceHandler();
         //Log.e("plucas", "MY ACTIVITY: " + getCurrentActivity().toString());
         handler.init(this.reactApplicationContext, this.applicationContext, this.locations);
     }
 
     @ReactMethod
-    public void addRegion(ReadableArray jsLocation) {
-        String geofenceId = jsLocation.getString(0);
-        double lat = jsLocation.getDouble(1);
-        double lon = jsLocation.getDouble(2);
-        float radius = (float) jsLocation.getDouble(3);
+    public void addRegion(String regionId, double lat, double lon, float radius) {
+        GeofenceLocation location = new GeofenceLocation(regionId, lat, lon, radius);
 
-        GeofenceLocation location = new GeofenceLocation(geofenceId, lat, lon, radius);
-
-        Log.e("plucas", "[][][] addRegion: " + geofenceId + "; " + lat + "; " + lon + "; " + radius);
+        Log.e("plucas", "[][][] addRegion: " + regionId + "; " + lat + "; " + lon + "; " + radius);
         this.locations.add(location);
     }
 
     @ReactMethod
-    public void startLocationUpdates() {
+    public void startRanging() {
         handler.startLocationUpdates();
     }
 
     @ReactMethod
-    public void stopLocationUpdates() {
+    public void stopRanging() {
         handler.stopLocationUpdates();
     }
 
@@ -80,12 +75,6 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     }
 
     public void onNewIntent(Intent intent) {
-        Log.e("plucas", "[]][] onNewIntent!!!");
-        if (intent.hasExtra("notification")) {
-//            Bundle bundle = intent.getBundleExtra("notification");
-//            bundle.putBoolean("foreground", false);
-//            intent.putExtra("notification", bundle);
-//            mJsDelivery.notifyNotification(bundle);
-        }
+        Log.e("plucas", "[]][] onNewIntent");
     }
 }
