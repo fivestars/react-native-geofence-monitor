@@ -22,6 +22,12 @@ CLLocationManager *_locationManager;
 CLCircularRegion *region;
 NSMutableArray *clRegions;
 
+- (void)dealloc {
+    regions = nil;
+    _locationManager = nil;
+    region = nil;
+    clRegions = nil;
+}
 
 RCT_EXPORT_METHOD(startMonitoring)
 {
