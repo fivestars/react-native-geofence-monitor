@@ -123,15 +123,15 @@ RCT_EXPORT_METHOD(addRegion:(NSString *)regionId lat:(nonnull NSNumber *) lat lo
     NSString *type;
     if (state == CLRegionStateInside) {
         NSLog(@"[][] plucas: locationManager didDetermineState INSIDE for %@", region.identifier);
-        type = @"GEOFENCE_TRANSITION_INSIDE";
+        type = @"GEOFENCE_RANGING_INSIDE";
     }
     else if (state == CLRegionStateOutside) {
         NSLog(@"[][] plucas: locationManager didDetermineState OUTSIDE for %@", region.identifier);
-        type = @"GEOFENCE_TRANSITION_OUTSIDE";
+        type = @"GEOFENCE_RANGING_OUTSIDE";
     }
     else {
         NSLog(@"[][] plucas: locationManager didDetermineState OTHER for %@", region.identifier);
-        type = @"GEOFENCE_TRANSITION_OTHER";
+        type = @"GEOFENCE_RANGING_OTHER";
     }
 
     [self sendMessage:@"geofenceRanging" body:@{@"type": type, @"regionId": region.identifier}];

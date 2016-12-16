@@ -335,9 +335,9 @@ public class GeofenceHandler implements
             Location.distanceBetween(geofenceLocation.lat, geofenceLocation.lon, lat, lon, results);
             float distanceInMeters = results[0];
 
-            String type = "GEOFENCE_OUTSIDE";
+            String type = "GEOFENCE_RANGING_OUTSIDE";
             if (distanceInMeters <= geofenceLocation.radius) {
-                type = "GEOFENCE_INSIDE";
+                type = "GEOFENCE_RANGING_INSIDE";
             }
 
             Bundle b = new Bundle();
