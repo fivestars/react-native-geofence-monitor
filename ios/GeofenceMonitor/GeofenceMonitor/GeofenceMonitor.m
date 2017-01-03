@@ -24,6 +24,10 @@ NSMutableArray *clRegions;
 
 - (void)dealloc {
     _locationManager.delegate = nil;
+    _locationManager = nil;
+    regions = nil;
+    region = nil;
+    clRegions = nil;
 }
 
 RCT_EXPORT_METHOD(startMonitoring)
@@ -147,7 +151,7 @@ RCT_EXPORT_METHOD(addRegion:(NSString *)regionId lat:(nonnull NSNumber *) lat lo
 
 - (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error
 {
-    NSLog(@"[][] plucas: monitoringDidFailForRegion - error: %@", [error localizedDescription]);
+    NSLog(@"[][] plucas: monitoringDidFailForRegion - error: %@; %@; %@", [manager monitoredRegions], region, [error localizedDescription]);
     NSLog(@"[][] isAvailable %d", [CLLocationManager isMonitoringAvailableForClass:[CLRegion class]]);
 }
 
