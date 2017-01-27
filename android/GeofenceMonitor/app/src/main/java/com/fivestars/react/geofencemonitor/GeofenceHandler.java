@@ -52,7 +52,7 @@ import java.util.Map;
 public class GeofenceHandler implements
         ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status>, LocationListener {
 
-    protected static final String TAG = "GeofenceHandler";
+    protected static final String TAG = "GeofenceMonitor";
 
     /**
      * Provides the entry point to Google Play services.
@@ -118,7 +118,7 @@ public class GeofenceHandler implements
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
-        Log.e(TAG, "[][] || creating google api client");
+        Log.i(TAG, "creating google api client");
     }
 
 
@@ -161,8 +161,6 @@ public class GeofenceHandler implements
         builder.addGeofences(mGeofenceList);
 
         // Return a GeofencingRequest.
-
-        Log.e("plucas", "here's what we're requesting" + mGeofenceList.toString());
         return builder.build();
     }
 
@@ -233,7 +231,7 @@ public class GeofenceHandler implements
         if (status.isSuccess()) {
             // Update state and save in shared preferences.
             mGeofencesAdded = !mGeofencesAdded;
-            Log.e(TAG, "addGeofences callback: success");
+            Log.i(TAG, "addGeofences callback: success");
         } else {
             // Get the status code for the error and log it using a user-friendly message.
             String errorMessage = "GeoFence error code: " + status.toString();
@@ -253,12 +251,10 @@ public class GeofenceHandler implements
         if (mGeofencePendingIntent != null) {
             return mGeofencePendingIntent;
         }
-        Log.e("plucas", "getGeofencePendingIntent");
         Intent intent = new Intent(this.context, GeofenceTransitionsIntentService.class);
         //intent.getParcelableExtra("callback")
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
         // addGeofences() and removeGeofences().
-        Log.e("plucas", "calling getService now...");
         return PendingIntent.getService(this.context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -294,7 +290,8 @@ public class GeofenceHandler implements
         if (mLocationRequest != null) {
             return;
         }
-        Log.e(TAG, "[][] || creating location request");
+
+        Log.i(TAG, "creating location request");
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
@@ -304,7 +301,7 @@ public class GeofenceHandler implements
 
     protected void startLocationUpdates() {
        try {
-           Log.e(TAG, "[][] || starting location updates");
+           Log.i(TAG, "starting location updates");
            createLocationRequest();
            LocationServices.FusedLocationApi.requestLocationUpdates(
                    mGoogleApiClient, mLocationRequest, this);
@@ -320,9 +317,9 @@ public class GeofenceHandler implements
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.e("plucas", "onLocationChange: " + location.toString());
+        Log.i(TAG, "onLocationChange: " + location.toString());
         if (this.reactApplicationContext == null) {
-            Log.e("plucas", "reactApplicationContext does not exist, unsubscribing from updates");
+            Log.i(TAG, "reactApplicationContext does not exist, unsubscribing from updates");
             stopLocationUpdates();
             return;
         }

@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class GeofenceTransitionsIntentService extends IntentService {
 
-    protected static final String TAG = "GeofenceTransitionsIS";
+    protected static final String TAG = "GeofenceMonitor";
 
     /**
      * This constructor is required, and calls the super IntentService(String)
@@ -46,12 +46,11 @@ public class GeofenceTransitionsIntentService extends IntentService {
     public GeofenceTransitionsIntentService() {
         // Use the TAG to name the worker thread.
         super(TAG);
-        Log.e("plucas", "constructor for intent...");
     }
 
     @Override
     public void onCreate() {
-        Log.e("plucas", "onCreate intent...");super.onCreate();
+        super.onCreate();
     }
 
     /**
@@ -61,12 +60,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.e("plucas", "onHandleIntent !!!@");
+        Log.i(TAG, "onHandleIntent");
 
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = Integer.toString(geofencingEvent.getErrorCode());
-            Log.e(TAG, "geofencingevent has error: " + errorMessage);
+            Log.e(TAG, "GeofencingEvent has error: " + errorMessage);
             return;
         }
 
@@ -140,20 +139,20 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 // If it's constructed, send a notification
                 if (context != null) {
                     handleGeofenceEvent((ReactApplicationContext) context, map);
-                    Log.e(TAG, "[][] sendNotification: context is not null");
+                    Log.i(TAG, "sendNotification: context is not null");
                 } else {
                     // Otherwise wait for construction, then send the notification
                     mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                         public void onReactContextInitialized(ReactContext context) {
                             handleGeofenceEvent((ReactApplicationContext) context, map);
-                            Log.e(TAG, "[][] sendNotification: inside onReactContextInitialized");
+                            Log.i(TAG, "sendNotification: inside onReactContextInitialized");
                         }
                     });
-                    Log.e(TAG, "[][] sendNotification: context IS null");
+                    Log.i(TAG, "sendNotification: context is null");
                     if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
                         // Construct it in the background
                         mReactInstanceManager.createReactContextInBackground();
-                        Log.e(TAG, "[][] sendNotification: calling createReactContextInBackground");
+                        Log.i(TAG, "sendNotification: calling createReactContextInBackground");
                     }
                 }
             }

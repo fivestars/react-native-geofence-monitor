@@ -20,6 +20,8 @@ import android.util.Log;
 
 public class GeofenceMonitor extends ReactContextBaseJavaModule implements ActivityEventListener {
 
+    protected static final String TAG = "GeofenceMonitor";
+
     private GeofenceHandler handler;
     private GeofenceMonitorJsDelivery mJsDelivery;
     private Application applicationContext;
@@ -48,7 +50,6 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     @ReactMethod
     public void startMonitoring() {
         handler = new GeofenceHandler();
-        //Log.e("plucas", "MY ACTIVITY: " + getCurrentActivity().toString());
         handler.init(this.reactApplicationContext, this.applicationContext, this.locations);
     }
 
@@ -56,7 +57,7 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     public void addRegion(String regionId, double lat, double lon, float radius) {
         GeofenceLocation location = new GeofenceLocation(regionId, lat, lon, radius);
 
-        Log.e("plucas", "[][][] addRegion: " + regionId + "; " + lat + "; " + lon + "; " + radius);
+        Log.i(TAG, "addRegion: " + regionId + "; " + lat + "; " + lon + "; " + radius);
         this.locations.add(location);
     }
 
@@ -71,10 +72,10 @@ public class GeofenceMonitor extends ReactContextBaseJavaModule implements Activ
     }
 
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        Log.e("plucas", "[]][] onActivityResult!");
+        Log.i(TAG, "onActivityResult");
     }
 
     public void onNewIntent(Intent intent) {
-        Log.e("plucas", "[]][] onNewIntent");
+        Log.i(TAG, "onNewIntent");
     }
 }
