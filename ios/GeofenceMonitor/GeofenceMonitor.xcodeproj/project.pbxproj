@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1BC792B91E00C13E0054EFBE /* GeofenceMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC792B81E00C13E0054EFBE /* GeofenceMonitor.m */; };
 		1BC792BA1E00C13E0054EFBE /* GeofenceMonitor.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1BC792B71E00C13E0054EFBE /* GeofenceMonitor.h */; };
-		1BC792F91E00CFF80054EFBE /* GeofenceHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BC792F81E00CFF80054EFBE /* GeofenceHandler.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,8 +28,6 @@
 		1BC792B41E00C13E0054EFBE /* libGeofenceMonitor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGeofenceMonitor.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1BC792B71E00C13E0054EFBE /* GeofenceMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeofenceMonitor.h; sourceTree = "<group>"; };
 		1BC792B81E00C13E0054EFBE /* GeofenceMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeofenceMonitor.m; sourceTree = "<group>"; };
-		1BC792F71E00CFF80054EFBE /* GeofenceHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeofenceHandler.h; sourceTree = "<group>"; };
-		1BC792F81E00CFF80054EFBE /* GeofenceHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeofenceHandler.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,8 +62,6 @@
 			children = (
 				1BC792B71E00C13E0054EFBE /* GeofenceMonitor.h */,
 				1BC792B81E00C13E0054EFBE /* GeofenceMonitor.m */,
-				1BC792F71E00CFF80054EFBE /* GeofenceHandler.h */,
-				1BC792F81E00CFF80054EFBE /* GeofenceHandler.m */,
 			);
 			path = GeofenceMonitor;
 			sourceTree = "<group>";
@@ -129,7 +124,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1BC792F91E00CFF80054EFBE /* GeofenceHandler.m in Sources */,
 				1BC792B91E00C13E0054EFBE /* GeofenceMonitor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
